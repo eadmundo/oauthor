@@ -1,5 +1,5 @@
 from oauthlib.oauth2 import RequestValidator, LegacyApplicationServer
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, redirect
 
 
 app = Flask(__name__)
@@ -43,7 +43,12 @@ validator = BasicValidator()
 server = LegacyApplicationServer(validator)
 
 
-@app.route('/oauth2/token', methods=['POST'])
+@app.route('/login/oauth/authorize')
+def authorize():
+    return redirect('http://localhost:5001/callback?code=foo&access_token=bar')
+
+
+@app.route('/login/oauth/access_token', methods=['POST'])
 def access_token():
     print server.create_token_response(
         request.url,
@@ -56,8 +61,11 @@ def access_token():
         request.headers,
         {},
     )
-    return make_response(jsonify({}), 200)
+    return make_response(jsonify({
+        'access_token': 'foo',
+        'token_type': 'Bearer'
+    }), 200)
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=5001)
+    app.run(debug=True, host='0.0.0.0', port=5002)

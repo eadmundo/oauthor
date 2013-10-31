@@ -1,0 +1,9 @@
+{% extends 'base.jinja' %}
+
+{% block content %}
+    {% if current_user.is_authenticated(): %}
+        logged in as {{ current_user.username }}. <a href="{{ url_for('logout') }}">logout</a> 
+    {% else %}
+        <a href="{{ url_for('login') }}">login with github</a>
+    {% endif %}
+{% endblock %}
